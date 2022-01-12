@@ -1,0 +1,26 @@
+<yatt:foo/>
+
+<!yatt:widget:html
+  foo
+  --
+  asdfadfadf
+  --
+  xx="foo" yy="bar"
+  >
+<yatt:bar/>
+<h2>Foo</h2>
+
+<!yatt:widget bar>
+<h2>Bar</h2>
+
+&yatt:BODY;
+
+<!--#yatt
+
+<!yatt:widget baz>
+<h2>Baz</h2>
+
+#-->
+
+<!yatt:widget qux>
+<h2>qux</h2>
