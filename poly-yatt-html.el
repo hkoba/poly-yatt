@@ -36,6 +36,9 @@
 ;;; Code:
 
 (require 'polymode)
+(require 'sgml-mode)
+(eval-when-compile
+  (require 'cl-lib))
 
 (defvar-local poly-yatt--target-lang nil)
 
@@ -51,8 +54,8 @@
     (when match
       (cl-destructuring-bind
           (tag-begin decl-end
-                     decl-open-begin decl-open-end
-                     opt-begin opt-end)
+                     _decl-open-begin _decl-open-end
+                     _opt-begin _opt-end)
           match
         (cons tag-begin decl-end)))))
 
@@ -60,9 +63,9 @@
   (let ((match (poly-yatt-multipart-match 1)))
     (when match
       (cl-destructuring-bind
-          (tag-begin decl-end
+          (_tag-begin _decl-end
                      decl-open-begin decl-open-end
-                     opt-begin opt-end)
+                     _opt-begin _opt-end)
           match
         (let ((kind (buffer-substring-no-properties
                      decl-open-begin decl-open-end)))
@@ -77,11 +80,11 @@
     (while (re-search-forward poly-yatt--multipart-regexp nil t ahead)
       (cl-destructuring-bind
           (all-begin all-end
-                     comment-open-begin comment-open-end
+                     comment-open-begin _comment-open-end
                      &optional
                      decl-open-begin decl-open-end
                      opt-begin  opt-end
-                     comment-close-begin comment-close-end)
+                     comment-close-begin _comment-close-end)
           (match-data)
         (cond
          (comment-open-begin
@@ -108,15 +111,15 @@
                              opt-begin opt-end))))
 
          (t
-          (error "really?")))))))
+          (error "Really?")))))))
 
 (defun poly-yatt-comment-match (ahead depth)
   (cl-block nil
     (while (re-search-forward poly-yatt--comment-regexp nil t ahead)
       (cl-destructuring-bind
-          (all-begin all-end
-                     comment-open-begin comment-open-end
-                     &optional comment-close-begin comment-close-end)
+          (_all-begin _all-end
+                     comment-open-begin _comment-open-end
+                     &optional comment-close-begin _comment-close-end)
           (match-data)
         (let ((new-depth (if (> ahead 0)
                              (if comment-open-begin (1+ depth) (1- depth))
