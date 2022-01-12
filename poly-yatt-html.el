@@ -96,7 +96,10 @@
           (let* (;; < の位置
                  (tag-begin (marker-position all-begin))
                  ;; 閉じ > を探す
-                 (tag-close (scan-lists (marker-position all-end) 1 1))
+                 (tag-close
+                  (with-syntax-table sgml-tag-syntax-table
+                    (scan-lists (marker-position all-end) 1 1)))
+
                  ;; 次の改行も decl に含める
                  (decl-end (if (eq (char-after tag-close) ?\n)
                                (1+ tag-close) tag-close)))
