@@ -103,9 +103,9 @@
                  ;; 次の改行も decl に含める
                  (decl-end (if (eq (char-after tag-close) ?\n)
                                (1+ tag-close) tag-close)))
-            (return (list tag-begin decl-end
-                          decl-open-begin decl-open-end
-                          opt-begin opt-end))))
+            (cl-return (list tag-begin decl-end
+                             decl-open-begin decl-open-end
+                             opt-begin opt-end))))
 
          (t
           (error "really?")))))))
@@ -122,7 +122,7 @@
                              (if comment-open-begin (1+ depth) (1- depth))
                            (if comment-close-begin (1+ depth) (1- depth)))))
           (if (eq new-depth 0)
-              (return (point))))))))
+              (cl-return (point))))))))
 
 ;; XXX: take namespace configuration from... yatt.config.json?
 ;; multipart (+ comment) handling
