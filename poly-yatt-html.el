@@ -139,7 +139,14 @@
 
 (define-polymode poly-yatt-html-mode
   :hostmode 'poly-html-hostmode
-  :innermodes '(poly-yatt-multipart-innermode))
+  :innermodes '(poly-yatt-multipart-innermode)
+  ;; XXX: yattconfig.json を読む…それとも package.json?
+  ;; XXX: namespace を設定する
+  ;; XXX: ターゲット言語を設定する
+  ;; XXX: 保存時 lint を設定する…
+  ;; XXX: いっそ language server を？
+  (setq poly-yatt--target-lang 'typescript)
+  )
 
 (provide 'poly-yatt-html)
 ;;; poly-yatt-html.el ends here
