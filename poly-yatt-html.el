@@ -6,7 +6,7 @@
 ;; Version: 0.1
 ;; Package-Requires: ((emacs "25") (polymode "0.2.2"))
 ;; URL: https://github.com/hkoba/yatt-js
-;; Keywords: languages, multi-modes, yatt
+;; Keywords: languages, multi-modes, html, templates, yatt
 ;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -36,7 +36,7 @@
 ;;; Code:
 
 (require 'polymode)
-(require 'sgml-mode)
+(require 'mhtml-mode)
 (eval-when-compile
   (require 'cl-lib))
 
@@ -130,6 +130,12 @@
 ;; XXX: take namespace configuration from... yatt.config.json?
 ;; multipart (+ comment) handling
 
+(define-hostmode poly-yatt-mhtml-hostmode
+  :mode 'mhtml-mode
+  :indent-offset 'sgml-basic-offset
+  :protect-font-lock nil
+  :protect-syntax t)
+
 (define-auto-innermode poly-yatt-multipart-innermode
   :head-matcher 'poly-yatt-multipart-boundary
   :tail-matcher 'poly-yatt-multipart-boundary
@@ -137,8 +143,8 @@
   :head-mode 'host
   :tail-mode 'host)
 
-(define-polymode poly-yatt-html-mode
-  :hostmode 'poly-html-hostmode
+(define-polymode poly-yatt-mhtml-mode
+  :hostmode 'poly-yatt-mhtml-hostmode
   :innermodes '(poly-yatt-multipart-innermode)
   ;; XXX: yattconfig.json を読む…それとも package.json?
   ;; XXX: namespace を設定する
