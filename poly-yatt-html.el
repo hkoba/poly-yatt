@@ -40,14 +40,52 @@
 (eval-when-compile
   (require 'cl-lib))
 
+(require 'poly-yatt-config)
+
+(defvar-local poly-yatt--config nil)
+
+(defvar poly-yatt-default-target-lang 'typescript)
 (defvar-local poly-yatt--target-lang nil)
 
-(defvar-local poly-yatt--comment-regexp
-  "<!\\(--#yatt\\b\\)\\|\\(#-->\\)")
+(defvar-local poly-yatt--comment-regexp nil)
+
+(defun poly-yatt--compose-comment-regexp (&optional config)
+  (let ((nspat
+         (poly-yatt--vector-to-regexp
+          (poly-yatt-namespace config)))
+        (old-comment-close
+         (cdr (assoc 'old-comment-close (or config poly-yatt--config)))))
+    (string-join (list
+                  (format "<!\\(--#%s\\b\\)" nspat)
+                  (format "\\(%s-->\\)" (if old-comment-close "" "#")))
+                 "\\|")))
+
+(defun poly-yatt-namespace (&optional config)
+  (or (cdr (assoc 'namespace (or config poly-yatt--config)))
+      ["yatt"]))
+
+(defun poly-yatt--vector-to-regexp (vec)
+  (if (>= (length vec) 2)
+      (concat "\\(?:"
+              (string-join vec "\\|")
+              "\\)")
+    (elt vec 0)))
 
 (defvar-local poly-yatt--multipart-regexp
-  "<!\\(--#yatt\\b\\)\\|^<!yatt:\\([[:alnum:]]+\\)\\(\\(?::[[:alnum:]]+\\)+\\)?\\b\\|\\(#-->\\)")
-;; XXX: construct regexp from config
+  "<!\\(--#yatt\\b\\)\\|^<!ssri:\\([[:alnum:]]+\\)\\(\\(?::[[:alnum:]]+\\)+\\)?\\b\\|\\(-->\\)")
+
+
+(defun poly-yatt--compose-multipart-regexp (&optional config)
+  (let ((nspat
+         (poly-yatt--vector-to-regexp
+          (poly-yatt-namespace config)))
+        (old-comment-close
+         (cdr (assoc 'old-comment-close (or config poly-yatt--config)))))
+    (string-join (list
+                  (format "<!\\(--#%s\\b\\)" nspat)
+                  (format "^<!%s:\\([[:alnum:]]+\\)\\(\\(?::[[:alnum:]]+\\)+\\)?\\b" nspat)
+                  (format "\\(%s-->\\)" (if old-comment-close "" "#")))
+                 "\\|")))
 
 (defun poly-yatt-multipart-boundary (ahead)
   (let ((match (poly-yatt-multipart-match ahead)))
@@ -151,7 +189,18 @@
   ;; XXX: ターゲット言語を設定する
   ;; XXX: 保存時 lint を設定する…
   ;; XXX: いっそ language server を？
-  (setq poly-yatt--target-lang 'typescript)
+
+  (setq poly-yatt--config (poly-yatt-load-config))
+
+  (setq poly-yatt--comment-regexp
+        (poly-yatt--compose-comment-regexp poly-yatt--config)
+
+        poly-yatt--multipart-regexp
+        (poly-yatt--compose-multipart-regexp poly-yatt--config)
+
+        poly-yatt--target-lang
+        (or (cdr (assoc 'target poly-yatt--config))
+            poly-yatt-default-target-lang))
   )
 
 (provide 'poly-yatt-html)
