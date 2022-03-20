@@ -168,7 +168,7 @@
 ;; XXX: take namespace configuration from... yatt.config.json?
 ;; multipart (+ comment) handling
 
-(define-hostmode poly-yatt-mhtml-hostmode
+(define-hostmode poly-yatt-html-hostmode
   :mode 'mhtml-mode
   :indent-offset 'sgml-basic-offset
   :protect-font-lock nil
@@ -181,8 +181,9 @@
   :head-mode 'host
   :tail-mode 'host)
 
-(define-polymode poly-yatt-mhtml-mode
-  :hostmode 'poly-yatt-mhtml-hostmode
+;;;###autoload (autoload 'poly-yatt-html-mode "poly-yatt-html" nil t)
+(define-polymode poly-yatt-html-mode
+  :hostmode 'poly-yatt-html-hostmode
   :innermodes '(poly-yatt-multipart-innermode)
   ;; XXX: yattconfig.json を読む…それとも package.json?
   ;; XXX: namespace を設定する

@@ -43,6 +43,7 @@
 
 (defvar poly-yatt-config-loader-list '(ts))
 
+;;;###autoload
 (defun poly-yatt-load-config ()
   (cl-dolist (k poly-yatt-config-loader-list)
     (let* (cfg
