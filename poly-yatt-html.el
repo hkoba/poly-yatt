@@ -111,7 +111,7 @@
                      decl-open-begin decl-open-end)))
           (cond
            ((equal kind "widget")
-            'host)
+            "mhtml")
            ((or (equal kind "action") (equal kind "entity"))
             poly-yatt--target-lang)))))))
 
