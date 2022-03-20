@@ -42,6 +42,8 @@
 
 (require 'poly-yatt-config)
 
+(defvar poly-yatt-html-mode-hook nil)
+
 (defvar-local poly-yatt--config nil)
 
 (defvar poly-yatt-default-target-lang 'typescript)
@@ -204,7 +206,8 @@
         poly-yatt--target-lang
         (or (cdr (assoc 'target poly-yatt--config))
             poly-yatt-default-target-lang))
-  )
+
+  (run-hooks 'poly-yatt-html-mode-hook))
 
 (provide 'poly-yatt-html)
 ;;; poly-yatt-html.el ends here
