@@ -126,7 +126,9 @@
           (match-data)
         (cond
          (comment-open-begin
-          (if (< ahead 0) (error "突然の開きコメント！"))
+          (when (< ahead 0)
+            (message "突然の開きコメント！ point=%d" (point))
+            (cl-return nil))
           (poly-yatt-comment-match ahead 1))
 
          (comment-close-begin
