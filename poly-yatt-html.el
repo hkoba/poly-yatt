@@ -205,9 +205,7 @@
 
         poly-yatt--target-lang
         (or (cdr (assoc 'target poly-yatt--config))
-            poly-yatt-default-target-lang))
-
-  (run-hooks 'poly-yatt-html-mode-hook))
+            poly-yatt-default-target-lang)))
 
 (provide 'poly-yatt-html)
 ;;; poly-yatt-html.el ends here
