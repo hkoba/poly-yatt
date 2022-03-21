@@ -52,7 +52,8 @@
            (loader (intern-soft (concat "poly-yatt-config--load-" key))))
       (when (and finder (fboundp finder) loader (fboundp loader)
                  (setq cfg (funcall finder)))
-        (cl-return (funcall loader cfg))))))
+        (cl-return (cons (cons 'yatt-impl (intern key))
+                         (funcall loader cfg)))))))
 
 (defun poly-yatt-config--find-yatt-pm ()
   (poly-yatt-config-find-file-upward ".htyattroot"))
