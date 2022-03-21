@@ -36,13 +36,20 @@
 ;;; Code:
 
 (require 'polymode)
+
 (require 'mhtml-mode)
+;; (defalias 'html-mode 'mhtml-mode);; Not worked
+
 (eval-when-compile
   (require 'cl-lib))
 
 (require 'poly-yatt-config)
 
-(defvar poly-yatt-html-mode-hook nil)
+(defvar poly-yatt-html-mode-before-hook nil
+  "Hook which runs before (poly-yatt-load-config)")
+
+(defvar poly-yatt-html-mode-hook nil
+  "Hook for general customization of poly-yatt-html-mode")
 
 (defvar-local poly-yatt--config nil)
 
@@ -195,6 +202,10 @@
   ;; XXX: 保存時 lint を設定する…
   ;; XXX: いっそ language server を？
 
+  ;; run hook before loading yatt config
+  (run-hooks 'poly-yatt-html-mode-before-hook)
+
+  (message "loading yatt config")
   (setq poly-yatt--config (poly-yatt-load-config))
 
   (setq poly-yatt--comment-regexp
