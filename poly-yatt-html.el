@@ -64,10 +64,11 @@
           (poly-yatt-namespace config)))
         (old-comment-close
          (cdr (assoc 'old-comment-close (or config poly-yatt--config)))))
-    (string-join (list
-                  (format "<!\\(--#%s\\b\\)" nspat)
-                  (format "\\(%s-->\\)" (if old-comment-close "" "#")))
-                 "\\|")))
+    (string-join
+     (list
+      (format "<!\\(--#%s\\b\\)" nspat)
+      (format "\\(%s-->\\)" (if old-comment-close "" "#")))
+     "\\|")))
 
 (defun poly-yatt-namespace (&optional config)
   (or (cdr (assoc 'namespace (or config poly-yatt--config)))
@@ -75,14 +76,14 @@
 
 (defun poly-yatt--vector-to-regexp (vec)
   (if (>= (length vec) 2)
-      (concat "\\(?:"
-              (string-join vec "\\|")
-              "\\)")
+      (concat
+       "\\(?:"
+       (string-join vec "\\|")
+       "\\)")
     (elt vec 0)))
 
 (defvar-local poly-yatt--multipart-regexp
-  "<!\\(--#yatt\\b\\)\\|^<!ssri:\\([[:alnum:]]+\\)\\(\\(?::[[:alnum:]]+\\)+\\)?\\b\\|\\(-->\\)")
-
+  nil)
 
 (defun poly-yatt--compose-multipart-regexp (&optional config)
   (let ((nspat
@@ -90,11 +91,12 @@
           (poly-yatt-namespace config)))
         (old-comment-close
          (cdr (assoc 'old-comment-close (or config poly-yatt--config)))))
-    (string-join (list
-                  (format "<!\\(--#%s\\b\\)" nspat)
-                  (format "^<!%s:\\([[:alnum:]]+\\)\\(\\(?::[[:alnum:]]+\\)+\\)?\\b" nspat)
-                  (format "\\(%s-->\\)" (if old-comment-close "" "#")))
-                 "\\|")))
+    (string-join
+     (list
+      (format "<!\\(--#%s\\b\\)" nspat)
+      (format "^<!%s:\\([[:alnum:]]+\\)\\(\\(?::[[:alnum:]]+\\)+\\)?\\b" nspat)
+      (format "\\(%s-->\\)" (if old-comment-close "" "#")))
+     "\\|")))
 
 (defun poly-yatt-multipart-boundary (ahead)
   (let ((match (poly-yatt-multipart-match ahead)))
