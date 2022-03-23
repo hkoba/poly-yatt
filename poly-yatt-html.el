@@ -108,7 +108,7 @@
           match
         (cons tag-begin decl-end)))))
 
-(defun poly-yatt-multipart-mode ()
+(defun poly-yatt-multipart-mode-matcher ()
   (let ((match (poly-yatt-multipart-match 1)))
     (when match
       (cl-destructuring-bind
@@ -190,7 +190,7 @@
 (define-auto-innermode poly-yatt-multipart-innermode
   :head-matcher 'poly-yatt-multipart-boundary
   :tail-matcher 'poly-yatt-multipart-boundary
-  :mode-matcher 'poly-yatt-multipart-mode
+  :mode-matcher 'poly-yatt-multipart-mode-matcher
   :head-mode 'host
   :tail-mode 'host)
 
