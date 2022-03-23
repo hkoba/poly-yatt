@@ -195,6 +195,7 @@
   :protect-syntax t)
 
 (define-auto-innermode poly-yatt-multipart-innermode
+  :adjust-face 0
   :head-matcher 'poly-yatt-multipart-head
   :tail-matcher 'poly-yatt-multipart-boundary
   :mode-matcher 'poly-yatt-multipart-mode-matcher
