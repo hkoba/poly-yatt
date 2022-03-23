@@ -98,6 +98,10 @@
       (format "\\(%s-->\\)" (if old-comment-close "" "#")))
      "\\|")))
 
+(defun poly-yatt-multipart-head (ahead)
+  (or (equal (point) 0)
+      (poly-yatt-multipart-boundary ahead)))
+
 (defun poly-yatt-multipart-boundary (ahead)
   (let ((match (poly-yatt-multipart-match ahead)))
     (when match
@@ -119,7 +123,7 @@
         (let ((kind (buffer-substring-no-properties
                      decl-open-begin decl-open-end)))
           (cond
-           ((equal kind "widget")
+           ((member kind '("widget" "args"))
             "mhtml")
            ((or (equal kind "action") (equal kind "entity"))
             poly-yatt--target-lang)))))))
@@ -188,7 +192,7 @@
   :protect-syntax t)
 
 (define-auto-innermode poly-yatt-multipart-innermode
-  :head-matcher 'poly-yatt-multipart-boundary
+  :head-matcher 'poly-yatt-multipart-head
   :tail-matcher 'poly-yatt-multipart-boundary
   :mode-matcher 'poly-yatt-multipart-mode-matcher
   :head-mode 'host
