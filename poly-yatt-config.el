@@ -41,19 +41,26 @@
 
 (require 'json)
 
-(defvar poly-yatt-config-loader-list '(ts))
+(defvar poly-yatt-config-loader-list '(yatt-js))
 
 ;;;###autoload
 (defun poly-yatt-load-config ()
-  (cl-dolist (k poly-yatt-config-loader-list)
-    (let* (cfg
-           (key (if (symbolp k) (symbol-name k) k))
-           (finder (intern-soft (concat "poly-yatt-config--find-" key)))
-           (loader (intern-soft (concat "poly-yatt-config--load-" key))))
-      (when (and finder (fboundp finder) loader (fboundp loader)
-                 (setq cfg (funcall finder)))
-        (cl-return (cons (cons 'yatt-impl (intern key))
-                         (funcall loader cfg)))))))
+  (or
+   (cl-dolist (k poly-yatt-config-loader-list)
+     (let* (cfg
+            (key (if (symbolp k) (symbol-name k) k))
+            (finder (intern-soft (concat "poly-yatt-config--find-" key)))
+            (loader (intern-soft (concat "poly-yatt-config--load-" key))))
+       (when (and finder (fboundp finder) loader (fboundp loader)
+                  (setq cfg (funcall finder)))
+         (cl-return (cons (cons 'yatt-impl (intern key))
+                          (funcall loader cfg))))))
+   ;;; XXX: Customize
+   (list
+    (cons 'yatt-impl 'yatt-js)
+    (cons 'namespace ["yatt"])
+    (cons 'old-comment-close nil))
+   ))
 
 (defun poly-yatt-config--find-yatt-pm ()
   (poly-yatt-config-find-file-upward ".htyattroot"))
@@ -84,10 +91,15 @@
 
 (defun poly-yatt-config--find-yatt-lite ()
   (poly-yatt-config-find-file-upward "app.psgi"))
+(defun poly-yatt-config--load-yatt-lite (cfg)
+  (list (cons 'target "perl")
+        (cons 'namespace ["yatt"])
+        (cons 'old-comment-close t)))
 
-(defun poly-yatt-config--find-yatt-ts ()
+(defun poly-yatt-config--find-yatt-js ()
+  (message "Searching yattconfig.json")
   (poly-yatt-config-find-file-upward "yattconfig.json"))
-(defun poly-yatt-config--load-yatt-ts (cfg)
+(defun poly-yatt-config--load-yatt-js (cfg)
   (json-read-file cfg))
 
 ;;; Ported from github.com/hkoba/yatt_lite/elisp/yatt-lint-any-mode.el
@@ -145,6 +157,31 @@
 	       (tramp-file-name-port vec)
 	       ""))))))
 
+(defun poly-yatt-config-any-shell-command (cmd &rest args)
+  (let ((tmpbuf (generate-new-buffer " *poly-yatt-config-temp*"))
+	rc err)
+    (save-window-excursion
+      (unwind-protect
+	  (setq rc (poly-yatt-config-tramp-command-in
+		    (current-buffer)
+		    cmd args tmpbuf))
+	(setq err (with-current-buffer tmpbuf
+		    ;; To remove last \n
+		    (goto-char (point-max))
+		    (skip-chars-backward "\n")
+		    (delete-region (point) (point-max))
+		    (buffer-string)))
+	;; (message "error=(((%s)))" err)
+	(kill-buffer tmpbuf)))
+    `(rc ,rc err ,err)))
+
+(defun poly-yatt-config-tramp-command-in (curbuf cmd args &optional outbuf errorbuf)
+  (let ((command (apply #'concat (poly-yatt-config-tramp-localname cmd)
+			args)))
+    (if (poly-yatt-config-is-tramp (buffer-file-name curbuf))
+	(tramp-handle-shell-command
+	 command outbuf errorbuf)
+      (shell-command command outbuf errorbuf))))
 
 (defun poly-yatt-config-is-tramp (fn)
   (and (fboundp 'tramp-tramp-file-p)
