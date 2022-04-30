@@ -43,6 +43,7 @@
   (let ((hook 'after-save-hook) (fn 'yatt-js-lint-run))
     (if yatt-js-lint-mode
         (progn
+          (make-variable-buffer-local hook)
           (add-hook hook fn nil nil))
       (remove-hook hook fn nil))
     ))
@@ -50,10 +51,25 @@
 ;;;###autoload
 (defun yatt-js-lint-run ()
   (interactive)
-  (poly-yatt-config-any-shell-command
-   "yatt-js-lint"
-   " "
-   (poly-yatt-config-tramp-localname (current-buffer))))
+  (let* ((res (poly-yatt-config-any-shell-command
+               "yatt-js-lint"
+               " "
+               (poly-yatt-config-tramp-localname (current-buffer))))
+         (rc (cdr (assoc 'rc res)))
+         (errmsg (cdr (assoc 'err res)))
+         )
+    (unless (eq rc 0)
+      (when (setq pos (yatt-js-lint-parse-error errmsg))
+        (goto-line (car pos))
+        (when (> (cdr pos) 1)
+          (forward-char (1- (cdr pos))))
+        (message "Error: %s" errmsg)))))
+
+(defun yatt-js-lint-parse-error (errmsg)
+  (save-match-data
+    (when (string-match "at [^ ]* line \\([0-9]+\\) column \\([0-9]+\\)" errmsg)
+      (cons (string-to-number (match-string 1 errmsg))
+            (string-to-number (match-string 2 errmsg))))))
 
 (provide 'yatt-js-lint-mode)
 ;;; yatt-js-lint-mode.el ends here

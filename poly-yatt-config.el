@@ -173,7 +173,7 @@
 		    (buffer-string)))
 	;; (message "error=(((%s)))" err)
 	(kill-buffer tmpbuf)))
-    `(rc ,rc err ,err)))
+    `((rc . ,rc) (err . ,err))))
 
 (defun poly-yatt-config-tramp-command-in (curbuf cmd args &optional outbuf errorbuf)
   (let ((command (apply #'concat (poly-yatt-config-tramp-localname cmd)
