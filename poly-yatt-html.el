@@ -155,14 +155,12 @@
           (match-data)
         (cond
          (comment-open-begin
-          (when (< ahead 0)
-            (message "突然の開きコメント！ point=%d" (point))
-            (cl-return nil))
-          (poly-yatt-comment-match ahead 1))
+          (when (> ahead 0)
+            (poly-yatt-comment-match ahead 1)))
 
          (comment-close-begin
-          (if (> ahead 0) (error "突然の閉じコメント！"))
-          (poly-yatt-comment-match ahead 1))
+          (when (< ahead 0)
+            (poly-yatt-comment-match ahead 1)))
 
          (decl-open-begin
           (let* (;; < の位置
