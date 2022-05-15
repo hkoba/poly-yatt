@@ -128,9 +128,9 @@
               (let ((kind (buffer-substring-no-properties
                            decl-open-begin decl-open-end)))
                 (cond
-                 ((member kind '("widget" "args"))
+                 ((member kind '("widget" "args" "page"))
                   "mhtml")
-                 ((or (equal kind "action") (equal kind "entity"))
+                 ((member kind '("action" "entity"))
                   poly-yatt--target-lang)))))
       (if poly-yatt-html-mode--debug
           (message "found mode %s at %d" res (point)))
