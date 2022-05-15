@@ -203,7 +203,7 @@
 (define-hostmode poly-yatt-html-hostmode
   :mode 'mhtml-mode
   :indent-offset 'sgml-basic-offset
-  :protect-font-lock nil
+  :protect-font-lock t
   :protect-syntax t)
 
 (define-auto-innermode poly-yatt-multipart-innermode
