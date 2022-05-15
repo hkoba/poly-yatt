@@ -48,6 +48,9 @@
 (defvar poly-yatt-html-mode-before-hook nil
   "Hook which runs before (poly-yatt-load-config)")
 
+(defvar poly-yatt-html-mode--debug nil
+  "Emit debug messages")
+
 (defvar poly-yatt-html-mode-hook nil
   "Hook for general customization of poly-yatt-html-mode")
 
@@ -113,22 +116,33 @@
         (cons tag-begin decl-end)))))
 
 (defun poly-yatt-multipart-mode-matcher ()
-  (let ((match (poly-yatt-multipart-match 1)))
-    (when match
-      (cl-destructuring-bind
-          (_tag-begin _decl-end
-                     decl-open-begin decl-open-end
-                     _opt-begin _opt-end)
-          match
-        (let ((kind (buffer-substring-no-properties
-                     decl-open-begin decl-open-end)))
-          (cond
-           ((member kind '("widget" "args"))
-            "mhtml")
-           ((or (equal kind "action") (equal kind "entity"))
-            poly-yatt--target-lang)))))))
+  (let (res (match (poly-yatt-multipart-match 1)))
+    (cond
+     (match
+      (setq res
+            (cl-destructuring-bind
+                (_tag-begin _decl-end
+                            decl-open-begin decl-open-end
+                            _opt-begin _opt-end)
+                match
+              (let ((kind (buffer-substring-no-properties
+                           decl-open-begin decl-open-end)))
+                (cond
+                 ((member kind '("widget" "args"))
+                  "mhtml")
+                 ((or (equal kind "action") (equal kind "entity"))
+                  poly-yatt--target-lang)))))
+      (if poly-yatt-html-mode--debug
+          (message "found mode %s at %d" res (point)))
+      res)
+     (t
+      (if poly-yatt-html-mode--debug
+          (message "no mode found at %d" (point)))
+      nil))))
 
 (defun poly-yatt-multipart-match (ahead)
+  (if poly-yatt-html-mode--debug
+      (message "called multipart-match at %d" (point)))
   (cl-block nil
     (while (re-search-forward poly-yatt--multipart-regexp nil t ahead)
       (cl-destructuring-bind
