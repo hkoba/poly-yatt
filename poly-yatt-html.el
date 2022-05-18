@@ -116,29 +116,36 @@
         (cons tag-begin decl-end)))))
 
 (defun poly-yatt-multipart-mode-matcher ()
-  (let (res (match (poly-yatt-multipart-match 1)))
+  (let ((match (poly-yatt-multipart-match 1)))
     (cond
      (match
-      (setq res
-            (cl-destructuring-bind
-                (_tag-begin _decl-end
-                            decl-open-begin decl-open-end
-                            _opt-begin _opt-end)
-                match
-              (let ((kind (buffer-substring-no-properties
-                           decl-open-begin decl-open-end)))
-                (cond
-                 ((member kind '("widget" "args" "page"))
-                  "mhtml")
-                 ((member kind '("action" "entity"))
-                  poly-yatt--target-lang)))))
-      (if poly-yatt-html-mode--debug
-          (message "found mode %s at %d" res (point)))
-      res)
+      (let ((res (poly-yatt-multipart--classify-part-kind
+                  (poly-yatt-multipart--extract-match-kind match))))
+        (if poly-yatt-html-mode--debug
+            (message "found mode %s at %d" res (point)))
+        (if (eq res 'host)
+            "mhtml";; XXX: customize??
+          res)))
      (t
       (if poly-yatt-html-mode--debug
           (message "no mode found at %d" (point)))
       nil))))
+
+(defun poly-yatt-multipart--extract-match-kind (match)
+  (cl-destructuring-bind
+      (_tag-begin _decl-end
+                  decl-open-begin decl-open-end
+                  _opt-begin _opt-end)
+      match
+    (buffer-substring-no-properties
+     decl-open-begin decl-open-end)))
+
+(defun poly-yatt-multipart--classify-part-kind (kind)
+  (cond
+   ((member kind '("widget" "args" "page"))
+    'host)
+   ((member kind '("action" "entity"))
+    poly-yatt--target-lang)))
 
 (defun poly-yatt-multipart-match (ahead)
   (if poly-yatt-html-mode--debug
