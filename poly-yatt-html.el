@@ -208,6 +208,10 @@
   '((t (:background "#d2d4f1" :extend t)))
   "Face used for yatt declaration block (<!yatt:...>)")
 
+(defface poly-yatt-action-face
+  '((t (:background "#f4f2f5" :extend t)))
+  "Face used for yatt action part (<!yatt:...>)")
+
 ;; XXX: take namespace configuration from... yatt.config.json?
 ;; multipart (+ comment) handling
 
@@ -217,14 +221,42 @@
   :protect-font-lock t
   :protect-syntax t)
 
-(define-auto-innermode poly-yatt-multipart-innermode
-  :adjust-face 0
-  :head-adjust-face 'poly-yatt-declaration-face
-  :head-matcher 'poly-yatt-multipart-head
-  :tail-matcher 'poly-yatt-multipart-boundary
-  :mode-matcher 'poly-yatt-multipart-mode-matcher
-  :head-mode 'host
-  :tail-mode 'host)
+;; (define-auto-innermode poly-yatt-multipart-innermode
+;;   :adjust-face 0
+;;   :head-adjust-face 'poly-yatt-declaration-face
+;;   :head-matcher 'poly-yatt-multipart-head
+;;   :tail-matcher 'poly-yatt-multipart-boundary
+;;   :mode-matcher 'poly-yatt-multipart-mode-matcher
+;;   :head-mode 'host
+;;   :tail-mode 'host)
+
+(defclass pm-inner-poly-yatt-auto-chunkmode (pm-inner-auto-chunkmode) ())
+
+(eval
+ (polymode--define-chunkmode
+  'pm-inner-poly-yatt-auto-chunkmode
+  'poly-yatt-multipart-innermode
+  nil nil;; doc parent
+  '(
+    :adjust-face 0
+    :head-adjust-face 'poly-yatt-declaration-face
+    :head-matcher 'poly-yatt-multipart-head
+    :tail-matcher 'poly-yatt-multipart-boundary
+    :mode-matcher 'poly-yatt-multipart-mode-matcher
+    :head-mode 'host
+    :tail-mode 'host)
+  ))
+
+(cl-defmethod pm-get-adjust-face ((chunkmode pm-inner-poly-yatt-auto-chunkmode) type)
+  (if (and (eq type 'body)
+           (not
+            (save-excursion
+             (let ((match (poly-yatt-multipart-match -1)))
+               (eq 'host
+                   (poly-yatt-multipart--classify-part-kind
+                    (poly-yatt-multipart--extract-match-kind match)))))))
+      'poly-yatt-action-face
+    (cl-call-next-method chunkmode type)))
 
 ;;;###autoload (autoload 'poly-yatt-html-mode "poly-yatt-html" nil t)
 (define-polymode poly-yatt-html-mode
