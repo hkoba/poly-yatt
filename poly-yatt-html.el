@@ -204,6 +204,10 @@
           (if (eq new-depth 0)
               (cl-return (point))))))))
 
+(defface poly-yatt-declaration-face
+  '((t (:background "#d2d4f1" :extend t)))
+  "Face used for yatt declaration block (<!yatt:...>)")
+
 ;; XXX: take namespace configuration from... yatt.config.json?
 ;; multipart (+ comment) handling
 
@@ -215,6 +219,7 @@
 
 (define-auto-innermode poly-yatt-multipart-innermode
   :adjust-face 0
+  :head-adjust-face 'poly-yatt-declaration-face
   :head-matcher 'poly-yatt-multipart-head
   :tail-matcher 'poly-yatt-multipart-boundary
   :mode-matcher 'poly-yatt-multipart-mode-matcher
