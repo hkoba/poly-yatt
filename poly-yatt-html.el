@@ -258,6 +258,9 @@
       'poly-yatt-action-face
     (cl-call-next-method chunkmode type)))
 
+(cl-defmethod pm-indent-line ((_chunkmode pm-inner-poly-yatt-auto-chunkmode) span)
+  (mhtml-indent-line))
+
 ;;;###autoload (autoload 'poly-yatt-html-mode "poly-yatt-html" nil t)
 (define-polymode poly-yatt-html-mode
   :hostmode 'poly-yatt-html-hostmode
