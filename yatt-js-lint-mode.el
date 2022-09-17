@@ -36,10 +36,15 @@
 
 (require 'poly-yatt-config)
 
+(defvar yatt-lint-js-mode-map (make-sparse-keymap))
+(define-key yatt-lint-js-mode-map [f5] 'yatt-js-lint-run)
+
 ;;;###autoload
 (define-minor-mode yatt-js-lint-mode
   "Lint yatt-js files"
   :lighter "<F5 lint>"
+  :keymap yatt-lint-js-mode-map
+  :global nil
   (let ((hook 'after-save-hook) (fn 'yatt-js-lint-run))
     (if yatt-js-lint-mode
         (progn
@@ -51,19 +56,25 @@
 ;;;###autoload
 (defun yatt-js-lint-run ()
   (interactive)
-  (let* ((res (poly-yatt-config-any-shell-command
-               "yatt-js-lint"
-               " "
-               (poly-yatt-config-tramp-localname (current-buffer))))
-         (rc (cdr (assoc 'rc res)))
-         (errmsg (cdr (assoc 'err res)))
-         )
-    (unless (eq rc 0)
+  (when yatt-js-lint-mode
+    (let* ((res (poly-yatt-config-any-shell-command
+                 "yattjs-lint"
+                 " "
+                 (poly-yatt-config-tramp-localname (current-buffer))))
+           (rc (cdr (assoc 'rc res)))
+           (errmsg (cdr (assoc 'err res)))
+           )
       (when (setq pos (yatt-js-lint-parse-error errmsg))
         (goto-line (car pos))
         (when (> (cdr pos) 1)
-          (forward-char (1- (cdr pos))))
-        (message "Error: %s" errmsg)))))
+            (forward-char (1- (cdr pos)))))
+      (message "%s"
+               (cond ((> (length errmsg) 0)
+		    errmsg)
+		   ((not (eq rc 0))
+		    "Unknown error")
+		   (t
+		    "lint OK"))))))
 
 (defun yatt-js-lint-parse-error (errmsg)
   (save-match-data
