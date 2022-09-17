@@ -54,6 +54,11 @@
 (defvar poly-yatt-html-mode-hook nil
   "Hook for general customization of poly-yatt-html-mode")
 
+(defvar poly-yatt-html-linter-alist
+  '((yatt-js . yatt-js-lint-mode)
+    (yatt-lite . yatt-lint-any-mode))
+  "Alist of yatt implementations vs corresponding linter mode")
+
 (defvar-local poly-yatt--config nil)
 
 (defvar poly-yatt-default-target-lang 'typescript)
@@ -285,7 +290,18 @@
 
         poly-yatt--target-lang
         (or (cdr (assoc 'target poly-yatt--config))
-            poly-yatt-default-target-lang)))
+            poly-yatt-default-target-lang))
+
+  (let* ((impl (cdr (assoc 'yatt-impl poly-yatt--config)))
+         (linter (cdr (assoc impl poly-yatt-html-linter-alist))))
+    (when linter
+      (cond ((symbolp linter)
+             (message "Enabling linter %s" linter)
+             (funcall linter t)
+             )
+            (t
+             (error "Unsupported form linter %s" linter)))))
+  )
 
 (provide 'poly-yatt-html)
 ;;; poly-yatt-html.el ends here
