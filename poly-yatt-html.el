@@ -183,7 +183,12 @@
                     ;; 一旦 < に戻り、
                     (goto-char tag-begin)
                     ;; そこから > の後まで進む
-                    (goto-char (scan-sexps (point) 1))))
+                    (condition-case nil
+                        (goto-char (scan-sexps (point) 1))
+                      (error
+                       ;; '' や "" の片割れを入力した瞬間は scan-exps が
+                       ;; エラーになる。その場合は単に > まで移動
+                       (search-forward ">")))))
 
                  ;; 次の改行も decl に含める
                  (decl-end (if (eq (char-after tag-close) ?\n)
