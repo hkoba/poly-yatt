@@ -45,6 +45,8 @@
 
 (require 'poly-yatt-config)
 
+(require 'newcomment)
+
 (defvar poly-yatt-html-mode-before-hook nil
   "Hook which runs before (poly-yatt-load-config)")
 
@@ -58,6 +60,15 @@
   '((yatt-js . yatt-js-lint-mode)
     (yatt-lite . yatt-lint-any-mode))
   "Alist of yatt implementations vs corresponding linter mode")
+
+(defcustom poly-yatt-comment-style 'extra-line
+  "Style to be used for ‘comment-region’."
+  :type `(choice
+          ,@(mapcar #'(lambda (i)
+                        (let* ((kw (nth 0 i))
+                               (doc (concat (symbol-name kw) " - " (nth 5 i))))
+                        `(const :tag ,doc ,kw)))
+                    comment-styles)))
 
 (defvar-local poly-yatt--config nil)
 
@@ -286,6 +297,12 @@
 
   (message "loading yatt config")
   (setq poly-yatt--config (poly-yatt-load-config))
+
+  (let ((ns (aref (poly-yatt-namespace) 0)))
+    (setq-local comment-start    (concat "<!--#" ns ""))
+    (setq-local comment-continue " # ")
+    (setq-local comment-end      " #-->")
+    (setq-local comment-style poly-yatt-comment-style))
 
   (setq poly-yatt--comment-regexp
         (poly-yatt--compose-comment-regexp poly-yatt--config)
