@@ -106,18 +106,18 @@
 
 (defun poly-yatt-config-find-file-upward (file &optional startdir)
   "Search FILE from STARTDIR and its parent, upto /."
-  (let* ((full (or startdir (file-name-directory
-			     (buffer-file-name (current-buffer)))))
-	 (prefix (poly-yatt-config-tramp-prefix full))
-	 (dir    (poly-yatt-config-tramp-localname full))
-	 fn)
-    (while (and
-	    dir
-	    (not (equal dir "/"))
-	    (not (file-exists-p (setq fn (concat prefix dir file)))))
-      (setq dir (file-name-directory (directory-file-name dir))))
-    (if (file-exists-p fn)
-	fn)))
+  (-if-let (full (or startdir (-if-let (fn (buffer-file-name (current-buffer)))
+                                  (file-name-directory fn))))
+      (let ((prefix (poly-yatt-config-tramp-prefix full))
+	    (dir    (poly-yatt-config-tramp-localname full))
+	    fn)
+        (while (and
+	        dir
+	        (not (equal dir "/"))
+	        (not (file-exists-p (setq fn (concat prefix dir file)))))
+          (setq dir (file-name-directory (directory-file-name dir))))
+        (if (file-exists-p fn)
+	    fn))))
 
 (defun poly-yatt-config-tramp-localname (fn-or-buf)
   ;;; XXX: How about accepting dissected-vec as argument?
