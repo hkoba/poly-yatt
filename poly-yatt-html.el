@@ -318,6 +318,7 @@
          (linter (cdr (assoc impl poly-yatt-html-linter-alist))))
     (when linter
       (cond ((symbolp linter)
+             ;; (princ (format "autoload? %s" (autoloadp (symbol-function linter))))
              (message "Enabling linter %s" linter)
              (funcall linter t)
              )
