@@ -47,6 +47,10 @@
 
 (require 'newcomment)
 
+(defgroup poly-yatt nil
+  "YATT support in polymode"
+  :group 'polymode)
+
 (defvar poly-yatt-html-mode-before-hook nil
   "Hook which runs before (poly-yatt-load-config)")
 
@@ -63,6 +67,7 @@
 
 (defcustom poly-yatt-comment-style 'extra-line
   "Style to be used for ‘comment-region’."
+  :group 'poly-yatt
   :type `(choice
           ,@(mapcar #'(lambda (i)
                         (let* ((kw (nth 0 i))
@@ -227,11 +232,13 @@
 
 (defface poly-yatt-declaration-face
   '((t (:background "#d2d4f1" :extend t)))
-  "Face used for yatt declaration block (<!yatt:...>)")
+  "Face used for yatt declaration block (<!yatt:...>)"
+  :group 'poly-yatt)
 
 (defface poly-yatt-action-face
   '((t (:background "#f4f2f5" :extend t)))
-  "Face used for yatt action part (<!yatt:...>)")
+  "Face used for yatt action part (<!yatt:...>)"
+  :group 'poly-yatt)
 
 ;; XXX: take namespace configuration from... yatt.config.json?
 ;; multipart (+ comment) handling
