@@ -41,6 +41,8 @@
 
 (require 'json)
 
+(require 'tramp)
+
 (defvar poly-yatt-config-loader-list '(yatt-js))
 
 ;;;###autoload
@@ -67,7 +69,6 @@
 
 (defun poly-yatt-config--load-yatt-pm (fn)
   (let* (raw
-         result
          (converter "xhf2json.pl")
          (avail (-any? (lambda (p)
                          (let ((fn (concat p "/" converter)))
@@ -87,11 +88,13 @@
     ))
 
 (defun poly-yatt-parse-xhf-file (fn)
+  (ignore fn)
   (error "Not yet implemented"))
 
 (defun poly-yatt-config--find-yatt-lite ()
   (poly-yatt-config-find-file-upward "app.psgi"))
 (defun poly-yatt-config--load-yatt-lite (cfg)
+  (ignore cfg)
   (list (cons 'target "perl")
         (cons 'namespace ["yatt"])
         (cons 'old-comment-close t)))
