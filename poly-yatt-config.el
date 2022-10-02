@@ -108,7 +108,7 @@
   "Search FILE from STARTDIR and its parent, upto /."
   (-if-let (full (or startdir (-if-let (fn (buffer-file-name (current-buffer)))
                                   (file-name-directory fn))))
-      (let ((prefix (poly-yatt-config-tramp-prefix full))
+      (let ((prefix (file-remote-p full))
 	    (dir    (poly-yatt-config-tramp-localname full))
 	    fn)
         (while (and
@@ -131,31 +131,6 @@
 	(let ((vec (tramp-dissect-file-name fn)))
 	  (tramp-file-name-localname vec))
       fn)))
-
-(defun poly-yatt-config-tramp-prefix (fn-or-buf)
-  ;;; XXX: duplicate logic! fn-or-buf
-  (let ((fn (cond ((stringp fn-or-buf)
-		   fn-or-buf)
-		  ((bufferp fn-or-buf)
-		   (buffer-file-name fn-or-buf))
-		  (t
-		   (error "Invalid argument %s" fn-or-buf)))))
-    (if (poly-yatt-config-is-tramp fn)
-	(let ((vec (tramp-dissect-file-name fn))
-              (version (version-to-list tramp-version)))
-          (if (version-list-< version (version-to-list "2.3.2"))
-              (tramp-make-tramp-file-name
-	       (tramp-file-name-method vec)
-	       (tramp-file-name-user vec)
-	       (tramp-file-name-host vec)
-	       "")
-            (tramp-make-tramp-file-name
-	       (tramp-file-name-method vec)
-	       (tramp-file-name-user vec)
-	       (tramp-file-name-domain vec)
-	       (tramp-file-name-host vec)
-	       (tramp-file-name-port vec)
-	       ""))))))
 
 (defun poly-yatt-config-any-shell-command (cmd &rest args)
   (let ((tmpbuf (generate-new-buffer " *poly-yatt-config-temp*"))
