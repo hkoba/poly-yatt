@@ -169,7 +169,7 @@
   (cl-block nil
     (while (re-search-forward poly-yatt--multipart-regexp nil t ahead)
       (cl-destructuring-bind
-          (all-begin all-end
+          (all-begin _all-end
                      comment-open-begin _comment-open-end
                      &optional
                      decl-open-begin decl-open-end
@@ -280,6 +280,7 @@
     (cl-call-next-method chunkmode type)))
 
 (cl-defmethod pm-indent-line ((_chunkmode pm-inner-poly-yatt-auto-chunkmode) span)
+  (ignore span)
   (mhtml-indent-line))
 
 ;;;###autoload (autoload 'poly-yatt-html-mode "poly-yatt-html" nil t)
