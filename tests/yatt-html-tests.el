@@ -1,7 +1,7 @@
 
 (require 'poly-yatt-html)
 (require 'polymode-test-utils)
-
+(load "../loaddefs");; For autoload
 ;; (pm-test-get-file "t000.ytjs")
 
 (pm-test-run-on-file poly-yatt-html-mode "t000.ytjs"
