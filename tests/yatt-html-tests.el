@@ -9,7 +9,7 @@
   (goto-char 1)
   (pm-switch-to-buffer)
   (should (equal '(1 . 14) (pm-innermost-range (point))))
-  (should (equal '(14 . 188) (poly-yatt-multipart-boundary 1)))
+  (should (equal '(14 . 86) (poly-yatt-multipart-boundary 1)))
 
   (should (equal '(14 . 86) (pm-innermost-range (point))))
 
