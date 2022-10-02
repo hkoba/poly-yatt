@@ -48,7 +48,6 @@
   (let ((hook 'after-save-hook) (fn 'yatt-js-lint-run))
     (if yatt-js-lint-mode
         (progn
-          (make-variable-buffer-local hook)
           (add-hook hook fn nil nil))
       (remove-hook hook fn nil))
     ))
@@ -63,11 +62,14 @@
                  (poly-yatt-config-tramp-localname (current-buffer))))
            (rc (cdr (assoc 'rc res)))
            (errmsg (cdr (assoc 'err res)))
+           pos
            )
       (when (setq pos (yatt-js-lint-parse-error errmsg))
-        (goto-line (car pos))
-        (when (> (cdr pos) 1)
-            (forward-char (1- (cdr pos)))))
+        (save-restriction
+          (goto-char (point-min))
+          (forward-line (1- (car pos)))
+          (when (> (cdr pos) 1)
+            (forward-char (1- (cdr pos))))))
       (message "%s"
                (cond ((> (length errmsg) 0)
 		    errmsg)
