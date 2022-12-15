@@ -47,6 +47,8 @@
 
 (require 'newcomment)
 
+(defvar-local poly-yatt--config nil)
+
 (defgroup poly-yatt nil
   "YATT support in polymode"
   :group 'polymode)
@@ -65,17 +67,26 @@
     (yatt-lite . yatt-lint-any-mode))
   "Alist of yatt implementations vs corresponding linter mode")
 
-(defcustom poly-yatt-comment-style 'extra-line
+(defun poly-yatt-set-default-comment-style (symbol style)
+  ;; (message "set default comment-style %s" style)
+  (set symbol style)
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (when (and (buffer-live-p buffer)
+                 (local-variable-p 'poly-yatt--config))
+        ;; (message "set comment-style %s in buffer %s" style buffer)
+        (setq-local comment-style style)))))
+
+(defcustom poly-yatt-comment-style 'multi-line
   "Style to be used for ‘comment-region’."
   :group 'poly-yatt
+  :set   'poly-yatt-set-default-comment-style
   :type `(choice
           ,@(mapcar #'(lambda (i)
                         (let* ((kw (nth 0 i))
                                (doc (concat (symbol-name kw) " - " (nth 5 i))))
                         `(const :tag ,doc ,kw)))
                     comment-styles)))
-
-(defvar-local poly-yatt--config nil)
 
 (defvar poly-yatt-default-target-lang 'typescript)
 (defvar-local poly-yatt--target-lang nil)
@@ -307,9 +318,11 @@
   (setq poly-yatt--config (poly-yatt-load-config))
 
   (let ((ns (aref (poly-yatt-namespace) 0)))
-    (setq-local comment-start    (concat "<!--#" ns ""))
-    (setq-local comment-continue " # ")
-    (setq-local comment-end      " #-->")
+    (setq-local comment-start    (concat "<!--#" ns " "))
+    (setq-local comment-start-skip (concat comment-start "[ \t]*"))
+    (setq-local comment-continue "")
+    (setq-local comment-end      "#-->")
+    (setq-local comment-end-skip (concat "[ \t]*" comment-end))
     (setq-local comment-style poly-yatt-comment-style))
 
   (setq poly-yatt--comment-regexp
