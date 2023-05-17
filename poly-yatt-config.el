@@ -76,7 +76,9 @@
                        exec-path)))
     (setq raw (if avail
                   (with-temp-buffer
-                    (call-process converter nil (current-buffer) nil fn)
+                    (let ((rc (call-process converter nil (current-buffer) nil fn)))
+                      (unless (eq rc 0)
+                        (error "converter %s died with output: %s" converter (buffer-substring-no-properties (point-min) (point-max)))))
                     (goto-char (point-min))
                     (json-read))
                 (poly-yatt-parse-xhf-file fn)))
