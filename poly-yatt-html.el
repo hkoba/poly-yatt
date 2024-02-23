@@ -40,6 +40,9 @@
 (require 'mhtml-mode)
 ;; (defalias 'html-mode 'mhtml-mode);; Not worked
 
+(define-derived-mode poly-yatt-mode mhtml-mode "Poly YATT"
+  "Major mode to edit yatt files.")
+
 (eval-when-compile
   (require 'cl-lib))
 
@@ -156,7 +159,7 @@
         (if poly-yatt-html-mode--debug
             (message "found mode %s at %d" res (point)))
         (if (eq res 'host)
-            "mhtml";; XXX: customize??
+            "poly-yatt-mode"
           res)))
      (t
       (if poly-yatt-html-mode--debug
@@ -255,7 +258,7 @@
 ;; multipart (+ comment) handling
 
 (define-hostmode poly-yatt-html-hostmode
-  :mode 'mhtml-mode
+  :mode 'poly-yatt-mode
   :indent-offset 'sgml-basic-offset
   :protect-font-lock t
   :protect-syntax t)
@@ -346,6 +349,16 @@
             (t
              (error "Unsupported form linter %s" linter)))))
   )
+
+;; (add-to-list 'eglot-server-programs
+;;              (cons 'poly-yatt-mode 'poly-yatt-find-eglot-server-program))
+
+(defun poly-yatt-find-eglot-server-program (&optional interactive)
+  (let ((project-root (cdr (assoc 'project-root poly-yatt--config))))
+    (cl-case (cdr (assoc 'yatt-impl poly-yatt--config))
+      (yatt-lite
+       (list (concat project-root "lib/YATT/Lite/LanguageServer.pm") "server"))
+      (t))))
 
 (provide 'poly-yatt-html)
 ;;; poly-yatt-html.el ends here

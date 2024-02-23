@@ -86,6 +86,7 @@
           (or (assoc 'namespace raw)
               (cons 'namespace ["yatt"]))
           (cons 'old-comment-close t)
+          (cons 'project-root (file-name-directory fn))
           (cons 'raw raw))
     ))
 
@@ -96,16 +97,23 @@
 (defun poly-yatt-config--find-yatt-lite ()
   (poly-yatt-config-find-file-upward "app.psgi"))
 (defun poly-yatt-config--load-yatt-lite (cfg)
-  (ignore cfg)
   (list (cons 'target "perl")
         (cons 'namespace ["yatt"])
+        (cons 'project-root (file-name-directory cfg))
         (cons 'old-comment-close t)))
 
 (defun poly-yatt-config--find-yatt-js ()
   (message "Searching yattconfig.json")
   (poly-yatt-config-find-file-upward "yattconfig.json"))
 (defun poly-yatt-config--load-yatt-js (cfg)
-  (json-read-file cfg))
+  (let ((json (json-read-file cfg)))
+    (list
+     (cons 'target "typescript")
+     (cons 'namespace (or
+                       (cdr (assoc 'namespace json))
+                       ["yatt"]))
+     (cons 'project-root (file-name-directory cfg)))))
+
 
 ;;; Ported from github.com/hkoba/yatt_lite/elisp/yatt-lint-any-mode.el
 
