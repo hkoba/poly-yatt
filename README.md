@@ -8,7 +8,4 @@
 </p>
 
 
-This package provides `poly-yatt-html-mode` - a [polymode]() for yatt.
-
-
-[polymode]: https://polymode.github.io/
+This package provides `poly-yatt-mode` - a [polymode](https://polymode.github.io/) for yatt.

@@ -1,4 +1,4 @@
-;;; poly-yatt-html.el --- poly-yatt-html-mode polymode -*- lexical-binding: t -*-
+;;; poly-yatt.el --- poly-yatt-mode polymode -*- lexical-binding: t -*-
 ;;
 ;; Author: Hiroaki Kobayashi
 ;; Maintainer: Hiroaki Kobayashi
@@ -40,7 +40,7 @@
 (require 'mhtml-mode)
 ;; (defalias 'html-mode 'mhtml-mode);; Not worked
 
-(define-derived-mode poly-yatt-mode mhtml-mode "Poly YATT"
+(define-derived-mode poly-yatt-html-mode mhtml-mode "Poly YATT"
   "Major mode to edit yatt files.")
 
 (eval-when-compile
@@ -56,16 +56,16 @@
   "YATT support in polymode"
   :group 'polymode)
 
-(defvar poly-yatt-html-mode-before-hook nil
+(defvar poly-yatt-mode-before-hook nil
   "Hook which runs before (poly-yatt-load-config)")
 
-(defvar poly-yatt-html-mode--debug nil
+(defvar poly-yatt-mode--debug nil
   "Emit debug messages")
 
-(defvar poly-yatt-html-mode-hook nil
-  "Hook for general customization of poly-yatt-html-mode")
+(defvar poly-yatt-mode-hook nil
+  "Hook for general customization of poly-yatt-mode")
 
-(defvar poly-yatt-html-linter-alist
+(defvar poly-yatt-linter-alist
   '((yatt-js . yatt-js-lint-mode)
     (yatt-lite . yatt-lint-any-mode))
   "Alist of yatt implementations vs corresponding linter mode")
@@ -156,13 +156,13 @@
      (match
       (let ((res (poly-yatt-multipart--classify-part-kind
                   (poly-yatt-multipart--extract-match-kind match))))
-        (if poly-yatt-html-mode--debug
+        (if poly-yatt-mode--debug
             (message "found mode %s at %d" res (point)))
         (if (eq res 'host)
-            "poly-yatt-mode"
+            "poly-yatt-html-mode"
           res)))
      (t
-      (if poly-yatt-html-mode--debug
+      (if poly-yatt-mode--debug
           (message "no mode found at %d" (point)))
       nil))))
 
@@ -183,7 +183,7 @@
     poly-yatt--target-lang)))
 
 (defun poly-yatt-multipart-match (ahead)
-  (if poly-yatt-html-mode--debug
+  (if poly-yatt-mode--debug
       (message "called multipart-match at %d" (point)))
   (cl-block nil
     (while (re-search-forward poly-yatt--multipart-regexp nil t ahead)
@@ -257,8 +257,8 @@
 ;; XXX: take namespace configuration from... yatt.config.json?
 ;; multipart (+ comment) handling
 
-(define-hostmode poly-yatt-html-hostmode
-  :mode 'poly-yatt-mode
+(define-hostmode poly-yatt-hostmode
+  :mode 'poly-yatt-html-mode
   :indent-offset 'sgml-basic-offset
   :protect-font-lock t
   :protect-syntax t)
@@ -304,9 +304,9 @@
   (ignore span)
   (mhtml-indent-line))
 
-;;;###autoload (autoload 'poly-yatt-html-mode "poly-yatt-html" nil t)
-(define-polymode poly-yatt-html-mode
-  :hostmode 'poly-yatt-html-hostmode
+;;;###autoload (autoload 'poly-yatt-mode "poly-yatt" nil t)
+(define-polymode poly-yatt-mode
+  :hostmode 'poly-yatt-hostmode
   :innermodes '(poly-yatt-multipart-innermode)
   ;; XXX: yattconfig.json を読む…それとも package.json?
   ;; XXX: namespace を設定する
@@ -315,7 +315,7 @@
   ;; XXX: いっそ language server を？
 
   ;; run hook before loading yatt config
-  (run-hooks 'poly-yatt-html-mode-before-hook)
+  (run-hooks 'poly-yatt-mode-before-hook)
 
   (message "loading yatt config")
   (setq poly-yatt--config (poly-yatt-load-config))
@@ -339,7 +339,7 @@
             poly-yatt-default-target-lang))
 
   (let* ((impl (cdr (assoc 'yatt-impl poly-yatt--config)))
-         (linter (cdr (assoc impl poly-yatt-html-linter-alist))))
+         (linter (cdr (assoc impl poly-yatt-linter-alist))))
     (when linter
       (cond ((symbolp linter)
              ;; (princ (format "autoload? %s" (autoloadp (symbol-function linter))))
@@ -351,7 +351,7 @@
   )
 
 ;; (add-to-list 'eglot-server-programs
-;;              (cons 'poly-yatt-mode 'poly-yatt-find-eglot-server-program))
+;;              (cons 'poly-yatt-html-mode 'poly-yatt-find-eglot-server-program))
 
 (defun poly-yatt-find-eglot-server-program (&optional interactive)
   (let ((project-root (cdr (assoc 'project-root poly-yatt--config))))
@@ -360,5 +360,5 @@
        (list (concat project-root "lib/YATT/Lite/LanguageServer.pm") "server"))
       (t))))
 
-(provide 'poly-yatt-html)
-;;; poly-yatt-html.el ends here
+(provide 'poly-yatt)
+;;; poly-yatt.el ends here

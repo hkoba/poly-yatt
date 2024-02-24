@@ -1,4 +1,4 @@
-MODULE = poly-yatt-html
+MODULE = poly-yatt
 export EMACS ?= emacs
 EMACS_VERSION = $(shell ${EMACS} -Q --batch --eval "(princ emacs-version)")
 ELPA_DIR := .ELPA/$(EMACS_VERSION)
@@ -7,7 +7,7 @@ EMACSBATCH = $(EMACSRUN) --batch
 
 ELS = $(wildcard *.el)
 OBJECTS = $(ELS:.el=.elc)
-LINTELS = $(filter-out poly-yatt-html-autoloads.el, $(ELS))
+LINTELS = $(filter-out poly-yatt-autoloads.el, $(ELS))
 
 # export PM_VERBOSE
 

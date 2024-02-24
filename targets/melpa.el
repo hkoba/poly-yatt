@@ -8,7 +8,7 @@
                  (insert-file-contents file)
 	             (read (buffer-string)))))
       deps-requires (with-temp-buffer
-                      (insert-file-contents "poly-yatt-html.el")
+                      (insert-file-contents "poly-yatt.el")
                       (goto-char (point-min))
                       (when (re-search-forward "Package-Requires:" nil t)
                         (car (read-from-string (buffer-substring (point) (point-at-eol))))))
