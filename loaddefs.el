@@ -5,6 +5,11 @@
 
 ;;;### (autoloads nil "poly-yatt" "poly-yatt.el" (0 0 0 0))
 ;;; Generated autoloads from poly-yatt.el
+
+(defvar poly-yatt-use-eglot nil "\
+Use eglot in poly-yatt")
+
+(custom-autoload 'poly-yatt-use-eglot "poly-yatt" t)
  (autoload 'poly-yatt-mode "poly-yatt" nil t)
 
 (register-definition-prefixes "poly-yatt" '("pm-inner-poly-yatt-auto-chunkmode" "poly-yatt-"))

@@ -96,6 +96,12 @@
 
 (defvar-local poly-yatt--comment-regexp nil)
 
+;;;###autoload
+(defcustom poly-yatt-use-eglot nil
+  "Use eglot in poly-yatt"
+  :group 'poly-yatt
+  :type 'boolean)
+
 (defun poly-yatt--compose-comment-regexp (&optional config)
   (let ((nspat
          (poly-yatt--vector-to-regexp
@@ -313,7 +319,6 @@
   ;; XXX: ターゲット言語を設定する
   ;; XXX: 保存時 lint を設定する…
   ;; XXX: いっそ language server を？
-
   ;; run hook before loading yatt config
   (run-hooks 'poly-yatt-mode-before-hook)
 
@@ -348,10 +353,14 @@
              )
             (t
              (error "Unsupported form linter %s" linter)))))
-  )
 
-;; (add-to-list 'eglot-server-programs
-;;              (cons 'poly-yatt-html-mode 'poly-yatt-find-eglot-server-program))
+  (when poly-yatt-use-eglot
+    (message "Enabling eglot")
+    (require 'eglot)
+    (add-to-list 'eglot-server-programs
+                 (cons 'poly-yatt-html-mode
+                       'poly-yatt-find-eglot-server-program))
+    (call-interactively #'eglot)))
 
 (defun poly-yatt-find-eglot-server-program (&optional interactive)
   (ignore interactive)
