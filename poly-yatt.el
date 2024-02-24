@@ -354,6 +354,7 @@
 ;;              (cons 'poly-yatt-html-mode 'poly-yatt-find-eglot-server-program))
 
 (defun poly-yatt-find-eglot-server-program (&optional interactive)
+  (ignore interactive)
   (let ((project-root (cdr (assoc 'project-root poly-yatt--config))))
     (cl-case (cdr (assoc 'yatt-impl poly-yatt--config))
       (yatt-lite
