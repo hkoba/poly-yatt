@@ -354,7 +354,8 @@
             (t
              (error "Unsupported form linter %s" linter)))))
 
-  (when poly-yatt-use-eglot
+  (when (and poly-yatt-use-eglot
+             (poly-yatt-find-eglot-server-program))
     (message "Enabling eglot")
     (require 'eglot)
     (add-to-list 'eglot-server-programs
