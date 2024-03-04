@@ -365,7 +365,8 @@
 
 (defun poly-yatt-find-eglot-server-program (&optional interactive)
   (ignore interactive)
-  (let ((project-root (cdr (assoc 'project-root poly-yatt--config))))
+  (let ((project-root (file-local-name
+                       (cdr (assoc 'project-root poly-yatt--config)))))
     (cl-case (cdr (assoc 'yatt-impl poly-yatt--config))
       (yatt-lite
        (list (concat project-root "lib/YATT/Lite/LanguageServer.pm") "server"))
