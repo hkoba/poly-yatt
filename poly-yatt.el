@@ -356,12 +356,12 @@
 
   (when (and poly-yatt-use-eglot
              (poly-yatt-find-eglot-server-program))
-    (message "Enabling eglot")
     (require 'eglot)
-    (add-to-list 'eglot-server-programs
+    (when (not (assoc 'poly-yatt-html-mode eglot-server-programs))
+      (add-to-list 'eglot-server-programs
                  (cons 'poly-yatt-html-mode
-                       'poly-yatt-find-eglot-server-program))
-    (call-interactively #'eglot)))
+                       'poly-yatt-find-eglot-server-program)))
+    (eglot-ensure)))
 
 (defun poly-yatt-find-eglot-server-program (&optional interactive)
   (ignore interactive)
