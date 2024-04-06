@@ -117,17 +117,24 @@
 
 ;;; Ported from github.com/hkoba/yatt_lite/elisp/yatt-lint-any-mode.el
 
-(defun poly-yatt-config-find-file-upward (file &optional startdir)
-  "Search FILE from STARTDIR and its parent, upto /."
-  (-if-let (full (or startdir (-if-let (fn (buffer-file-name (current-buffer)))
-                                  (file-name-directory fn))))
+(defun poly-yatt-config-find-file-upward (fileSpec &optional startdir)
+  "Search FILESPEC from STARTDIR and its parent, upto /.
+
+FILESPEC can be a string or a list of strings.
+"
+  (-if-let (full (or startdir default-directory))
       (let ((prefix (file-remote-p full))
 	    (dir    (poly-yatt-config-tramp-localname full))
 	    fn)
         (while (and
 	        dir
 	        (not (equal dir "/"))
-	        (not (file-exists-p (setq fn (concat prefix dir file)))))
+	        (not
+                 (-any
+                  #'(lambda (file)
+                      (file-exists-p
+                       (setq fn (concat prefix dir file))))
+                  (if (consp fileSpec) fileSpec (list fileSpec)))))
           (setq dir (file-name-directory (directory-file-name dir))))
         (if (file-exists-p fn)
 	    fn))))
