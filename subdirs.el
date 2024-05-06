@@ -8,4 +8,4 @@
   (add-to-list 'load-path dir)
   (load (concat dir "loaddefs.el"))
   (add-to-list 'auto-mode-alist
-               (cons ext 'poly-yatt-html-mode)))
+               (cons ext 'poly-yatt-mode)))
