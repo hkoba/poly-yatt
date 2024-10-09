@@ -365,12 +365,12 @@
 
 (defun poly-yatt-find-eglot-server-program (&optional interactive)
   (ignore interactive)
-  (let ((project-root (file-local-name
-                       (cdr (assoc 'project-root poly-yatt--config)))))
-    (cl-case (cdr (assoc 'yatt-impl poly-yatt--config))
-      (yatt-lite
-       (list (concat project-root "lib/YATT/Lite/LanguageServer.pm") "server"))
-      (t))))
+  (let ((fn (cdr (assoc 'project-root poly-yatt--config))))
+    (when fn
+      (cl-case (cdr (assoc 'yatt-impl poly-yatt--config))
+        (yatt-lite
+         (list (concat (file-local-name fn) "lib/YATT/Lite/LanguageServer.pm") "server"))
+        (t)))))
 
 (provide 'poly-yatt)
 ;;; poly-yatt.el ends here
