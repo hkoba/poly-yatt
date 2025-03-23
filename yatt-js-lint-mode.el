@@ -48,8 +48,8 @@
   (let ((hook 'after-save-hook) (fn 'yatt-js-lint-run))
     (if yatt-js-lint-mode
         (progn
-          (add-hook hook fn nil nil))
-      (remove-hook hook fn nil))
+          (add-hook hook fn nil t))
+      (remove-hook hook fn t))
     ))
 
 ;;;###autoload

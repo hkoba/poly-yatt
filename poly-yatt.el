@@ -369,7 +369,8 @@
     (when fn
       (cl-case (cdr (assoc 'yatt-impl poly-yatt--config))
         (yatt-lite
-         (list (concat (file-local-name fn) "lib/YATT/Lite/LanguageServer.pm") "server"))
+         (list (concat (file-local-name fn) "lib/YATT/Lite/LanguageServer.pm")
+               "server"))
         (t)))))
 
 (provide 'poly-yatt)
