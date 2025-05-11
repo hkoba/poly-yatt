@@ -369,9 +369,21 @@
     (when fn
       (cl-case (cdr (assoc 'yatt-impl poly-yatt--config))
         (yatt-lite
-         (list (concat (file-local-name fn) "lib/YATT/Lite/LanguageServer.pm")
-               "server"))
+         (poly-yatt-find-ls--yatt-lite (file-local-name fn)))
         (t)))))
+
+(defun poly-yatt-find-ls--yatt-lite (rootPath)
+  (let (fn)
+    (cond ((file-exists
+            (setq fn (concat rootPath
+                             "lib/YATT/Lite/LanguageServer.pm")))
+           (list fn "server"))
+          ((file-exists
+            (setq fn (concat rootPath
+                             "local/lib/perl5/YATT/Lite/LanguageServer.pm")))
+           (list fn "server"))
+          (t
+           (list "yatt" "langserver")))))
 
 (provide 'poly-yatt)
 ;;; poly-yatt.el ends here
