@@ -185,7 +185,7 @@
   (cond
    ((member kind '("widget" "args" "page"))
     'host)
-   ((member kind '("action" "entity"))
+   ((member kind '("action" "entity" "argmacro"))
     poly-yatt--target-lang)))
 
 (defun poly-yatt-multipart-match (ahead)
