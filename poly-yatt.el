@@ -374,11 +374,11 @@
 
 (defun poly-yatt-find-ls--yatt-lite (rootPath)
   (let (fn)
-    (cond ((file-exists
+    (cond ((file-exists-p
             (setq fn (concat rootPath
                              "lib/YATT/Lite/LanguageServer.pm")))
            (list fn "server"))
-          ((file-exists
+          ((file-exists-p
             (setq fn (concat rootPath
                              "local/lib/perl5/YATT/Lite/LanguageServer.pm")))
            (list fn "server"))
