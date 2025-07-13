@@ -70,6 +70,12 @@
     (yatt-lite . yatt-lint-any-mode))
   "Alist of yatt implementations vs corresponding linter mode")
 
+(defvar poly-yatt-eglot--ignore-contact-modes
+  '(perl-mode
+    cperl-mode
+    poly-fallback-mode)
+  "A list of modes which should avoid using eglot in poly-yatt subsection.")
+
 (defun poly-yatt-set-default-comment-style (symbol style)
   ;; (message "set default comment-style %s" style)
   (set symbol style)
@@ -371,6 +377,18 @@
         (yatt-lite
          (poly-yatt-find-ls--yatt-lite (file-local-name fn)))
         (t)))))
+
+(eval-after-load "eglot"
+  '(progn
+     (advice-add
+      #'eglot--guess-contact :filter-return
+      (lambda (mode)
+        (if (member (caar mode)
+                    poly-yatt-eglot--ignore-contact-modes)
+            (progn
+              (message "Ignoring %s for eglot" (caar mode))
+              nil)
+          mode)))))
 
 (defun poly-yatt-find-ls--yatt-lite (rootPath)
   (let (fn)
