@@ -312,9 +312,16 @@
       'poly-yatt-action-face
     (cl-call-next-method chunkmode type)))
 
-(cl-defmethod pm-indent-line ((_chunkmode pm-inner-poly-yatt-auto-chunkmode) span)
+(cl-defmethod pm-indent-line ((chunkmode pm-inner-poly-yatt-auto-chunkmode) span)
   (ignore span)
-  (mhtml-indent-line))
+  (let ((mode (eieio-oref chunkmode 'mode)))
+    (cl-case mode
+    (poly-yatt-html-mode
+     (mhtml-indent-line))
+    (cperl-mode
+     (cperl-indent-line))
+    (t
+     (message "Not yet supported: %s" mode)))))
 
 ;;;###autoload (autoload 'poly-yatt-mode "poly-yatt" nil t)
 (define-polymode poly-yatt-mode
