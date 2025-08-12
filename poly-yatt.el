@@ -382,7 +382,7 @@
     (when fn
       (cl-case (cdr (assoc 'yatt-impl poly-yatt--config))
         (yatt-lite
-         (poly-yatt-find-ls--yatt-lite (file-local-name fn)))
+         (poly-yatt-find-ls--yatt-lite fn))
         (t)))))
 
 (eval-after-load "eglot"
@@ -398,15 +398,13 @@
           mode)))))
 
 (defun poly-yatt-find-ls--yatt-lite (rootPath)
-  (let (fn)
+  (let ((localRoot (file-local-name rootPath)))
     (cond ((file-exists-p
-            (setq fn (concat rootPath
-                             "lib/YATT/Lite/LanguageServer.pm")))
-           (list fn "server"))
+            (concat rootPath "lib/YATT/Lite/LanguageServer.pm"))
+           (list (concat localRoot "lib/YATT/Lite/LanguageServer.pm") "server"))
           ((file-exists-p
-            (setq fn (concat rootPath
-                             "local/lib/perl5/YATT/Lite/LanguageServer.pm")))
-           (list fn "server"))
+            (concat rootPath "local/lib/perl5/YATT/Lite/LanguageServer.pm"))
+           (list (concat localRoot "local/lib/perl5/YATT/Lite/LanguageServer.pm") "server"))
           (t
            (list "yatt" "langserver")))))
 
